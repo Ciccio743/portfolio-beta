@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta name="build" content="beta-2026-10-10-1220">
+<meta name="build" content="beta-2026-10-10-1250">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -401,6 +401,28 @@ R\xE9ponds UNIQUEMENT avec une ligne par actif, sans en-t\xEAte ni texte autour.
   }, { capture: true, passive: false });
   document.addEventListener("mousedown", function (e) { var s = e.target.closest && e.target.closest("select"); if (big(s)) { e.preventDefault(); show(s); } }, true);
   document.addEventListener("focusin", function (e) { var s = e.target; if (big(s) && !open) { s.blur(); show(s); } }, true);
+})();
+</script>
+<script>
+/* Bêta : aide à l'installation (navigateur d'appli sociale ou Safari non installé) */
+(function(){
+  var ua=navigator.userAgent||"", ios=/iPhone|iPad|iPod/.test(ua), android=/Android/.test(ua);
+  var standalone=window.navigator.standalone===true||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches);
+  if(standalone||(!ios&&!android))return;
+  var inApp=/FBAN|FBAV|FB_IAB|Messenger|Instagram|Snapchat|TikTok|musical_ly|LinkedInApp|Twitter|Line\/|WhatsApp|GSA\//.test(ua);
+  try{if(!inApp&&localStorage.getItem("beta-hint-off")==="1")return}catch(e){}
+  var msg=inApp
+    ?(ios?"Pour installer l'app : touche « ··· » ou l'icône en haut à droite, puis <b>Ouvrir dans Safari</b>.":"Pour installer l'app : touche « ⋮ » en haut à droite, puis <b>Ouvrir dans Chrome</b>.")
+    :(ios?"Installe l'app : touche <b>Partager</b> <span style='font-size:15px'>⎋</span> en bas, puis <b>Sur l'écran d'accueil</b>.":"Installe l'app : menu <b>⋮</b> en haut à droite, puis <b>Ajouter à l'écran d'accueil</b>.");
+  function show(){
+    if(document.getElementById("insthint"))return;
+    var d=document.createElement("div");d.id="insthint";
+    d.style.cssText="position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:9997;background:#D4BC8A;color:#09090B;border-radius:14px;padding:12px 40px 12px 14px;font:500 14px/1.45 -apple-system,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.5)";
+    d.innerHTML=msg+'<button aria-label="Fermer" style="position:absolute;top:6px;right:6px;width:30px;height:30px;border:0;border-radius:15px;background:rgba(0,0,0,.12);color:#09090B;font-size:17px;line-height:30px;padding:0">×</button>';
+    d.querySelector("button").onclick=function(){d.remove();try{localStorage.setItem("beta-hint-off","1")}catch(e){}};
+    document.body.appendChild(d);
+  }
+  setTimeout(show,1500);
 })();
 </script>
 </body>
