@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta name="build" content="beta-2026-10-11-1624">
+<meta name="build" content="beta-2026-10-11-1630">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -337,14 +337,14 @@ function incOfMonth(t,m){const A=(t.actIncomes??[]).filter(x=>x.month===m).reduc
 function realCh(t,a,r,m){return(t.expenses??[]).some(x=>x.src===a.id)?{...r,charges:String(spOfMonth(t,m,a.id).reduce((q,x)=>q+x.amount,0))}:r}
 function subsOf(t,cid){const c=spCats.find(q=>q.id===cid),used=(t.expenses??[]).filter(x=>x.cat===cid&&x.sub).map(x=>x.sub);return[...new Set([...(c?.subs??[]),...used])]}
 function spStats(t,months){const L=months.flatMap(m=>spOfMonth(t,m,"perso")),by={};L.forEach(x=>{const c=spCats.some(q=>q.id===x.cat)?x.cat:"autre",o=by[c]??={v:0,subs:{}},sb=x.sub||"Sans sous-cat\xE9gorie";o.v+=x.amount;o.subs[sb]=(o.subs[sb]??0)+x.amount});const inc=months.reduce((a,m)=>a+incOfMonth(t,m),0),tot=L.reduce((a,x)=>a+x.amount,0);return{L,by,inc,tot,save:inc-tot}}
-function SpChart({rows,sel,onSel,mode}){const H=React.createElement,W=340,Hh=150,pb=18,line=mode==="line",sv0=r=>r.inc-r.sp,mx=Math.max(1,...rows.map(r=>Math.max(r.inc,r.sp,sv0(r)))),mn=Math.min(0,...rows.map(sv0)),rg=mx-mn||1,y=v=>8+(Hh-8-pb)*(1-(v-mn)/rg),bw=W/Math.max(1,rows.length),S=[["inc","#3DD68C"],["sp","#FF7BAC"],["sv","#9C8CFF"]],val=(r,k)=>k==="sv"?sv0(r):r[k],cx=i=>i*bw+bw/2;
+function SpChart({rows,sel,onSel,mode}){const H=React.createElement,W=340,Hh=150,pb=18,line=mode==="line",sv0=r=>r.inc-r.sp,mx=Math.max(1,...rows.map(r=>Math.max(r.inc,r.sp,sv0(r)))),mn=Math.min(0,...rows.map(sv0)),rg=mx-mn||1,y=v=>8+(Hh-8-pb)*(1-(v-mn)/rg),bw=W/Math.max(1,rows.length),S=[["inc","#3DD68C"],["sp","#F2575C"],["sv","#4FA3FF"]],val=(r,k)=>k==="sv"?sv0(r):r[k],cx=i=>i*bw+bw/2;
 return H("div",null,H("svg",{viewBox:`0 0 ${W} ${Hh}`,style:{width:"100%",height:"auto",display:"block",overflow:"visible"}},
 H("line",{x1:0,x2:W,y1:y(0),y2:y(0),stroke:e.line,strokeWidth:1}),
 rows.map((r,i)=>{const x0=i*bw,on=r.k===sel,w=bw*.22;return H("g",{key:r.k,onClick:()=>onSel&&onSel(r.k),style:{cursor:onSel?"pointer":"default"}},H("rect",{x:x0+1,y:2,width:bw-2,height:Hh-pb-2,rx:6,fill:on?"rgba(156,140,255,0.13)":"transparent"}),
-!line&&S.map(([k,c],j)=>{const v=val(r,k),top=Math.min(y(v),y(0)),h=Math.abs(y(v)-y(0));return H("rect",{key:k,x:x0+bw*.14+j*w*1.05,y:top,width:w,height:Math.max(h,v?1:0),rx:2,fill:c,opacity:k==="inc"?.6:1})}),
+!line&&S.map(([k,c],j)=>{const v=val(r,k),top=Math.min(y(v),y(0)),h=Math.abs(y(v)-y(0));return H("rect",{key:k,x:x0+bw*.14+j*w*1.05,y:top,width:w,height:Math.max(h,v?1:0),rx:2,fill:c,opacity:1})}),
 H("text",{x:cx(i),y:Hh-4,textAnchor:"middle",fontSize:rows.length>8?9:10.5,fill:on?e.text:e.faint,fontWeight:on?700:400},r.label))}),
-line&&S.map(([k,c])=>H("g",{key:k},rows.length>1&&H("polyline",{points:rows.map((r,i)=>`${cx(i)},${y(val(r,k))}`).join(" "),fill:"none",stroke:c,strokeWidth:2.2,strokeLinejoin:"round",strokeLinecap:"round",opacity:k==="inc"?.85:1}),rows.map((r,i)=>H("circle",{key:i,cx:cx(i),cy:y(val(r,k)),r:r.k===sel?4:2.6,fill:c,stroke:e.bg,strokeWidth:1.1}))))),
-H("div",{style:{display:"flex",gap:14,justifyContent:"center",fontSize:12,color:e.muted,marginTop:6}},[["#3DD68C","Revenus"],["#FF7BAC","D\xE9penses"],["#9C8CFF","Mis de c\xF4t\xE9"]].map(([c,l])=>H("span",{key:l,style:{display:"flex",alignItems:"center",gap:5}},H("i",{style:{width:9,height:9,borderRadius:5,background:c}}),l))))}
+line&&S.map(([k,c])=>H("g",{key:k},rows.length>1&&H("polyline",{points:rows.map((r,i)=>`${cx(i)},${y(val(r,k))}`).join(" "),fill:"none",stroke:c,strokeWidth:2.2,strokeLinejoin:"round",strokeLinecap:"round",opacity:1}),rows.map((r,i)=>H("circle",{key:i,cx:cx(i),cy:y(val(r,k)),r:r.k===sel?4:2.6,fill:c,stroke:e.bg,strokeWidth:1.1}))))),
+H("div",{style:{display:"flex",gap:14,justifyContent:"center",fontSize:12,color:e.muted,marginTop:6}},[["#3DD68C","Revenus"],["#F2575C","D\xE9penses"],["#4FA3FF","Mis de c\xF4t\xE9"]].map(([c,l])=>H("span",{key:l,style:{display:"flex",alignItems:"center",gap:5}},H("i",{style:{width:9,height:9,borderRadius:5,background:c}}),l))))}
 function SpRecords({t}){const H=React.createElement,now=ymNow(),first=[...(t.expenses??[]).filter(x=>(x.src||"perso")==="perso").map(x=>(x.date||"").slice(0,7))].filter(Boolean).sort()[0];if(!first)return null;const ms=[];for(let k=first;k<=now;k=ymAdd(k,1))ms.push(k);
 const per=ms.map(k=>({k,...spStats(t,[k])})),act=per.filter(p=>p.tot>0),all=per.flatMap(p=>p.L),big=[...all].sort((a,b)=>b.amount-a.amount)[0],mL=k=>new Date(+k.slice(0,4),+k.slice(5)-1,1).toLocaleDateString("fr-FR",{month:"long",year:"numeric"}),
 maxM=[...act].sort((a,b)=>b.tot-a.tot)[0],minM=act.length>1?[...act].sort((a,b)=>a.tot-b.tot)[0]:null,withInc=per.filter(p=>p.inc>0),bestS=withInc.length?[...withInc].sort((a,b)=>b.save-a.save)[0]:null,
