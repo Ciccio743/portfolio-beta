@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta name="build" content="beta-2026-10-11-2025">
+<meta name="build" content="beta-2026-10-11-2042">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -436,14 +436,14 @@ let body;
 if(view==="mois"){const st=spStats(t,[m]),pv=spStats(t,[ymAdd(m,-1)]),last12=Array.from({length:12},(_,i)=>ymAdd(m,i-11)),rows=last12.map(k=>{const s0=spStats(t,[k]);return{k,label:mL(k),inc:s0.inc,sp:s0.tot}}),L=[...st.L].sort((a,b)=>(b.rec?m:b.date).localeCompare(a.rec?m:a.date)),recs=(t.expenses??[]).filter(x=>x.rec&&(x.src||"perso")==="perso"&&(!x.until||x.until>=now)),recT=recs.reduce((a,x)=>a+x.amount,0);
 body=H(React.Fragment,null,head(new Date(+m.slice(0,4),+m.slice(5)-1,1).toLocaleDateString("fr-FR",{month:"long",year:"numeric"}),()=>setM(ymAdd(m,-1)),()=>setM(ymAdd(m,1)),m<now),bil(st,pv),
 H("div",{style:{background:e.s1,borderRadius:18,padding:"14px 10px 10px",marginTop:12}},H("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,margin:"0 4px 10px"}},H("span",{style:{fontSize:13,color:e.muted}},"12 derniers mois"),H($e,{value:cm0,onChange:setCm,options:[{id:"bar",label:"Barres"},{id:"line",label:"Courbes"}]})),H(SpChart,{mode:cm0,rows,sel:m,onSel:setM})),
-H(SpCats,{st,pv,open,setOpen,per:"vs mois pr\xE9c\xE9dent",onEdit:setEd,onColor:setCol,onPalette:()=>setPal(!0)}),
+H(SpCats,{st,pv,open,setOpen,per:"vs mois pr\xE9c\xE9dent",onEdit:setEd,onPalette:()=>setPal(!0)}),
 recs.length>0&&H("div",{style:{marginTop:24}},H("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:4}},H("span",{style:{fontSize:17,fontWeight:700}},"Chaque mois"),H("span",{style:{fontSize:14,color:e.muted,...K}},ee(recT)," / mois")),recs.map(x=>item(x,`depuis ${new Date(x.date+"T12:00").toLocaleDateString("fr-FR",{month:"short",year:"numeric"})}`))))}
 else{const ms=yMonths(yr),st=spStats(t,ms),pvM=yMonths(yr-1).filter(k=>+k.slice(5)<=(yr===+now.slice(0,4)?+now.slice(5):12)&&k>=first.slice(0,7)),pv0=spStats(t,pvM),ratio=pvM.length?ms.length/pvM.length:1,pv=ratio===1?pv0:{...pv0,inc:pv0.inc*ratio,tot:pv0.tot*ratio,save:pv0.save*ratio,by:Object.fromEntries(Object.entries(pv0.by).map(([k,o])=>[k,{...o,v:o.v*ratio}]))},rows=ms.map(k=>{const s0=spStats(t,[k]);return{k,label:mL(k),inc:s0.inc,sp:s0.tot}}),yrows=years.slice(-5).map(y0=>{const s0=spStats(t,yMonths(y0));return{k:String(y0),label:String(y0),inc:s0.inc,sp:s0.tot}}),nM=ms.length||1;
 body=H(React.Fragment,null,head(String(yr),()=>setYr(yr-1),()=>setYr(yr+1),yr<+now.slice(0,4)),bil(st,pvM.length?pv:null),
 H("div",{style:{display:"flex",gap:8,marginTop:10}},kpi("D\xE9penses / mois",ee(st.tot/nM),spDelta(st.tot/nM,pvM.length?pv.tot/nM:0,!0)),kpi("Mis de c\xF4t\xE9 / mois",ee(st.save/nM),spDelta(st.save/nM,pvM.length?pv.save/nM:0,!1),st.save>=0?e.up:e.down)),
 H("div",{style:{background:e.s1,borderRadius:18,padding:"14px 10px 10px",marginTop:12}},H("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,margin:"0 4px 10px"}},H("span",{style:{fontSize:13,color:e.muted}},`Mois par mois en ${yr}`),H($e,{value:cm0,onChange:setCm,options:[{id:"bar",label:"Barres"},{id:"line",label:"Courbes"}]})),H(SpChart,{mode:cm0,rows,sel:null,onSel:k=>{setM(k),setView("mois")}})),
 yrows.length>1&&H("div",{style:{background:e.s1,borderRadius:18,padding:"14px 10px 10px",marginTop:12}},H("div",{style:{fontSize:13,color:e.muted,margin:"0 6px 8px"}},"Ann\xE9e apr\xE8s ann\xE9e"),H(SpChart,{mode:cm0,rows:yrows,sel:String(yr),onSel:k=>setYr(+k)})),
-H(SpCats,{st,pv:pvM.length?pv:null,open,setOpen,onEdit:setEd,onColor:setCol,onPalette:()=>setPal(!0),multi:!0,per:`vs ${yr-1}${ratio!==1?" (moyenne par mois)":yr===+now.slice(0,4)?" (m\xEAme p\xE9riode)":""}`}))}
+H(SpCats,{st,pv:pvM.length?pv:null,open,setOpen,onEdit:setEd,onPalette:()=>setPal(!0),multi:!0,per:`vs ${yr-1}${ratio!==1?" (moyenne par mois)":yr===+now.slice(0,4)?" (m\xEAme p\xE9riode)":""}`}))}
 return H("div",{style:{padding:"8px 20px 30px"}},
 H("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8}},H("div",{style:{fontSize:26,fontWeight:700}},"D\xE9penses"),H($e,{value:view,onChange:setView,options:[{id:"mois",label:"Mois"},{id:"annee",label:"Ann\xE9e"}]})),
 H("div",{style:{fontSize:12.5,color:e.faint,marginTop:4}},"Tes d\xE9penses perso. Elles ne changent jamais tes revenus."),
