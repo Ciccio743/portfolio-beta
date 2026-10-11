@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta name="build" content="beta-2026-10-11-2042">
+<meta name="build" content="beta-2026-10-11-2053">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -365,11 +365,11 @@ H("text",{x:cx(i),y:Hh-4,textAnchor:"middle",fontSize:rows.length>8?9:10.5,fill:
 line&&S.map(([k,c])=>H("g",{key:k},rows.length>1&&H("polyline",{points:rows.map((r,i)=>`${cx(i)},${y(val(r,k))}`).join(" "),fill:"none",stroke:c,strokeWidth:2.2,strokeLinejoin:"round",strokeLinecap:"round",opacity:1}),rows.map((r,i)=>H("circle",{key:i,cx:cx(i),cy:y(val(r,k)),r:r.k===sel?4:2.6,fill:c,stroke:e.bg,strokeWidth:1.1}))))),
 H("div",{style:{display:"flex",gap:14,justifyContent:"center",fontSize:12,color:e.muted,marginTop:6}},[["#3DD68C","Revenus"],["#F2575C","D\xE9penses"],["#4FA3FF","Mis de c\xF4t\xE9"]].map(([c,l])=>H("span",{key:l,style:{display:"flex",alignItems:"center",gap:5}},H("i",{style:{width:9,height:9,borderRadius:5,background:c}}),l))))}
 function SpRecords({t}){const H=React.createElement,now=ymNow(),first=[...(t.expenses??[]).filter(x=>(x.src||"perso")==="perso").map(x=>(x.date||"").slice(0,7))].filter(Boolean).sort()[0];if(!first)return null;const ms=[];for(let k=first;k<=now;k=ymAdd(k,1))ms.push(k);
-const per=ms.map(k=>({k,...spStats(t,[k])})),act=per.filter(p=>p.tot>0),all=per.flatMap(p=>p.L),big=[...all].sort((a,b)=>b.amount-a.amount)[0],mL=k=>new Date(+k.slice(0,4),+k.slice(5)-1,1).toLocaleDateString("fr-FR",{month:"long",year:"numeric"}),
-maxM=[...act].sort((a,b)=>b.tot-a.tot)[0],minM=act.length>1?[...act].sort((a,b)=>a.tot-b.tot)[0]:null,withInc=per.filter(p=>p.inc>0),bestS=withInc.length?[...withInc].sort((a,b)=>b.save-a.save)[0]:null,
+const per=ms.map(k=>({k,...spStats(t,[k]),tr:spOfMonth(t,k,"perso").some(x=>!x.rec)})),act=per.filter(p=>p.tr&&p.tot>0),all=per.flatMap(p=>p.L),big=[...all].sort((a,b)=>b.amount-a.amount)[0],mL=k=>new Date(+k.slice(0,4),+k.slice(5)-1,1).toLocaleDateString("fr-FR",{month:"long",year:"numeric"}),
+maxM=[...act].sort((a,b)=>b.tot-a.tot)[0],minM=act.length>1?[...act].sort((a,b)=>a.tot-b.tot)[0]:null,withInc=act.filter(p=>p.inc>0),bestS=withInc.length?[...withInc].sort((a,b)=>b.save-a.save)[0]:null,
 cat={};all.forEach(x=>{cat[x.cat]=(cat[x.cat]??0)+x.amount});const topC=Object.entries(cat).sort((a,b)=>b[1]-a[1])[0],tc=topC&&(spCats.find(c=>c.id===topC[0])??spCats[spCats.length-1]),
 sub={};all.filter(x=>x.sub).forEach(x=>{sub[x.sub]=(sub[x.sub]??0)+x.amount});const topS=Object.entries(sub).sort((a,b)=>b[1]-a[1])[0];
-let streak=0;for(let i=per.length-1;i>=0;i--){if(per[i].inc>0&&per[i].save>0)streak++;else if(i===per.length-1&&per[i].inc===0)continue;else break}
+let streak=0;for(let i=per.length-1;i>=0;i--){const q=per[i];if(!q.tr&&i===per.length-1)continue;if(q.tr&&q.inc>0&&q.save>0)streak++;else break}
 const avg=act.length?act.reduce((a,p)=>a+p.tot,0)/act.length:0,
 tiles=[big&&["\u{1F4B8}","Plus grosse d\xE9pense",ee(big.amount,2),`${big.note||big.sub||(spCats.find(c=>c.id===big.cat)?.label??"")} \xB7 ${big.rec?mL(big.occ):new Date(big.date+"T12:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short",year:"numeric"})}`,e.down],
 maxM&&["\u{1F525}","Mois le plus d\xE9pensier",ee(maxM.tot),mL(maxM.k),e.down],
@@ -379,7 +379,7 @@ tc&&["\u{1F4CA}","Cat\xE9gorie n\xB01",tc.label,`${ee(topC[1])} au total`,tc.col
 topS&&["\u{1F50D}","Sous-cat\xE9gorie n\xB01",topS[0],`${ee(topS[1])} au total`,e.text],
 avg>0&&["\u{1F4C5}","D\xE9pense moyenne",`${ee(avg)} / mois`,`sur ${act.length} mois`,e.text],
 streak>0&&["\u{1F4C8}","S\xE9rie en cours",`${streak} mois`,"d'affil\xE9e avec de l'\xE9pargne",e.up]].filter(Boolean);
-return H("div",{style:{marginTop:28}},H("div",{style:{fontSize:17,fontWeight:700,marginBottom:10}},"Records"),H("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}},tiles.map(([ic,l,v,s0,c])=>H("div",{key:l,style:{background:e.s1,borderRadius:16,padding:"12px 12px 11px",minWidth:0,...K}},H("div",{style:{fontSize:18}},ic),H("div",{style:{fontSize:12,color:e.muted,marginTop:4}},l),H("div",{style:{fontSize:16.5,fontWeight:750,color:c,marginTop:2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},v),H("div",{style:{fontSize:11.5,color:e.faint,marginTop:2,lineHeight:1.35,overflow:"hidden",textOverflow:"ellipsis",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}},s0)))))}
+return H("div",{style:{marginTop:28}},H("div",{style:{fontSize:17,fontWeight:700}},"Records"),H("div",{style:{fontSize:12.5,color:e.faint,margin:"2px 0 10px"}},act.length?`Calcul\xE9s sur les ${act.length} mois o\xF9 tu as not\xE9 tes d\xE9penses (les d\xE9penses automatiques seules ne comptent pas).`:"Note tes d\xE9penses du mois pour d\xE9bloquer les records par mois."),H("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}},tiles.map(([ic,l,v,s0,c])=>H("div",{key:l,style:{background:e.s1,borderRadius:16,padding:"12px 12px 11px",minWidth:0,...K}},H("div",{style:{fontSize:18}},ic),H("div",{style:{fontSize:12,color:e.muted,marginTop:4}},l),H("div",{style:{fontSize:16.5,fontWeight:750,color:c,marginTop:2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},v),H("div",{style:{fontSize:11.5,color:e.faint,marginTop:2,lineHeight:1.35,overflow:"hidden",textOverflow:"ellipsis",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}},s0)))))}
 function spDelta(cur,prev,upBad){if(!(Math.abs(prev)>0.5))return null;const p=(cur-prev)/Math.abs(prev);if(Math.abs(p)<.005)return{t:"=",c:e.faint};const up=p>0;return{t:`${up?"↑":"↓"} ${Math.abs(Math.round(p*100))} %`,c:up===upBad?e.down:e.up}}
 function SpendEd({data:t,item:n,onSave:sv,onDelete:dl,onClose:cl}){spApply(t);const H=React.createElement,biens=(t.assets??[]).filter(a=>a.kind==="realestate"),[f,setF]=G(()=>({amount:n?Ae(n.orig??n.amount):"",cur:n?.cur??"EUR",date:n?.date??Ie(),cat:n?.cat??"courses",sub:n?.sub??"",src:n?.src??"perso",rec:!!n?.rec,note:n?.note??"",until:n?.until??""})),[cf,setCf]=G(!1),s=(k,v)=>setF(q=>({...q,[k]:v})),isB=f.src!=="perso",cats=isB?bienCats:spCats,a0=ce(f.amount),rate=f.cur==="CHF"?t.fx?.CHF??1.07:1,ok=a0>0&&!!f.date,bn=biens.find(b=>b.id===f.src),cc=cats.find(c=>c.id===f.cat),subs=isB?[]:[...new Set([...subsOf(t,f.cat),...(f.sub?[f.sub]:[])])],
 lab=x=>H("div",{style:{fontSize:13,color:e.muted,marginBottom:6}},x),
