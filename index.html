@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta name="build" content="beta-2026-10-14-0655">
+<meta name="build" content="beta-2026-10-14-0812">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -285,13 +285,13 @@ H("button",{onClick:()=>onUse(r(R.v)),style:{...V,width:"100%",minHeight:42,marg
 /* ===== comptes reliés : chaque opération met à jour le solde du compte choisi ===== */
 const lkOn=t=>!!t&&svSources(t).length>0,
 /* compte proposé par défaut : le dernier utilisé */
-lkMain=(t,kd)=>{if(!t)return"";const I=kd==="dep"?[]:(t.actIncomes??[]).map(x=>[x.date,x.acc]),E=kd==="rev"?[]:(t.expenses??[]).filter(x=>!x.gap).map(x=>[x.date,x.acc]),O=kd?[]:[...(t.incomes??[]).map(x=>[x.date,x.acc]),...(t.transfers??[]).map(x=>[x.d,x.from])],L=[...I,...E,...O].map((x,i)=>[...x,i]).filter(x=>x[1]&&x[0]&&accHas(t,x[1])).sort((a,b)=>b[0].localeCompare(a[0])||b[2]-a[2]);return L[0]?.[1]??(kd?lkMain(t):svSources(t).find(x=>x.grp==="Comptes")?.key??"")},
+lkMain=()=>"",
 accCur=(t,k)=>k?.startsWith("a:")?((t.assets??[]).find(a=>a.id===k.slice(2))?.cur||"EUR"):"EUR",
 accHas=(t,k)=>k?.startsWith("a:")?(t.assets??[]).some(a=>a.id===k.slice(2)):k?.startsWith("p:")?t.positions.some(q=>q.id===k.slice(2).split("|")[0]):!1,
 accName=(t,k)=>{if(!k)return null;if(k.startsWith("a:"))return(t.assets??[]).find(a=>a.id===k.slice(2))?.name??"Compte supprim\xE9";const[pid,env]=k.slice(2).split("|"),q=t.positions.find(x=>x.id===pid);if(!q)return"Ligne supprim\xE9e";return env?(q.envelopes??[]).find(x=>x.id===env)?.name??q.name:q.name},
 /* argent qui entre (+) ou sort (−) d'un compte bancaire pour une opération de placement ; null = mouvement interne */
 txExt=x=>x.type==="deposit"?-(x.amount||0):x.type==="withdrawal"?x.amount||0:x.type==="buy"&&!x.cashId&&x.fund!=="div"?-(x.amount||0):x.type==="sell"&&x.out?x.amount||0:["div","interest","staking","other"].includes(x.type)&&!x.toId&&!x.reinvested?x.amount||0:null,
-txAccDef=(t,x)=>["div","interest","staking","other"].includes(x.type)?"":lkMain(t),
+txAccDef=()=>"",
 /* effets voulus : id → {k compte, e montant €, nat montant dans la devise d'origine, cur} */
 accEffects=(t,S0)=>{const W={},S=S0||"0000-00-00",td=Ie(),add=(id,k,d,eur,nat,cur,l)=>{if(!k||!d||d<S||d>td)return;W[id]={k,d,e:svR2(eur),nat:nat!=null?svR2(nat):void 0,cur:cur||"EUR",l}},AS=actSrc(t),pn=id=>t.positions.find(q=>q.id===id)?.name,TL={deposit:"Apport",withdrawal:"Retrait",buy:"Achat",sell:"Vente",div:"Dividende",interest:"Int\xE9r\xEAts",staking:"Staking",other:"Autre revenu"},cl=x=>x.note||x.sub||((x.src||"perso")==="perso"?spCats:bienCats).find(c=>c.id===x.cat)?.label||"D\xE9pense";
 (t.actIncomes??[]).forEach(x=>x.acc&&add("i:"+x.id,x.acc,x.date||(x.month?x.month+"-15":""),x.amount||0,x.orig,x.cur,AS.find(q=>q.id===x.src)?.label??"Revenu"));
@@ -336,7 +336,8 @@ function AccList({t,v,onPick,col,none}){const H=React.createElement,L=svSources(
 return H("div",null,G0.map(g=>H("div",{key:g},H("div",{style:{fontSize:11.5,color:e.faint,fontWeight:700,textTransform:"uppercase",letterSpacing:".04em",margin:"8px 8px 2px"}},g),L.filter(x=>x.grp===g).map(x=>H("button",{key:x.key,onClick:()=>onPick(x.key),style:{...V,width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",padding:"9px 8px",borderRadius:10,background:v===x.key?c+"22":"transparent",...K}},H("span",{style:{minWidth:0}},H("span",{style:{display:"block",fontSize:14.5,fontWeight:600}},x.name),H("span",{style:{fontSize:12,color:e.faint}},`${x.sub} \xB7 ${ee(x.v||0)}`)),v===x.key&&H("b",{style:{color:c}},"✓"))))),
 none&&H("button",{onClick:()=>onPick(""),style:{...V,width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:"left",padding:"9px 8px",borderRadius:10,marginTop:4,borderTop:`1px solid ${e.line}`,background:!v?c+"22":"transparent"}},H("span",null,H("span",{style:{display:"block",fontSize:14.5,fontWeight:600}},"Aucun compte"),H("span",{style:{fontSize:12,color:e.faint}},"ne change aucun solde")),!v&&H("b",{style:{color:c}},"✓")),
 !L.length&&H("div",{style:{fontSize:13,color:e.faint,padding:8}},"Aucun compte pour l'instant : ajoute un compte dans ton patrimoine."))}
-function AccChip({t,v,onChange,label,d,col}){const H=React.createElement,[op,setOp]=G(!1);if(!lkOn(t))return null;const c=col||e.cta,rc=v?accRecal(t,v):"",sn=t.settings?.link?.since,old=!!v&&!!d&&!!sn&&d<sn,oldR=!!v&&!!d&&!old&&!!rc&&d<rc;
+function AccChip({t,v,onChange,label,d,col,full}){const H=React.createElement,[op,setOp]=G(!1);if(!lkOn(t))return null;const c=col||e.cta,rc=v?accRecal(t,v):"",sn=t.settings?.link?.since,old=!!v&&!!d&&!!sn&&d<sn,oldR=!!v&&!!d&&!old&&!!rc&&d<rc;
+if(!v&&!full&&!op)return H("button",{onClick:()=>setOp(!0),style:{...V,display:"flex",alignItems:"center",gap:6,minHeight:36,margin:"6px 0 8px",padding:"0 2px",fontSize:13.5,fontWeight:600,color:e.muted}},"\u{1F517} Relier \xE0 un compte",H("span",{style:{fontSize:12,color:e.faint,fontWeight:500}},"(facultatif)"));
 return H("div",{style:{background:e.s1,borderRadius:14,marginTop:10,marginBottom:12,overflow:"hidden"}},
 H("button",{onClick:()=>setOp(!op),style:{...V,width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,padding:"10px 14px",minHeight:46}},H("span",{style:{fontSize:13.5,color:e.muted,fontWeight:600,whiteSpace:"nowrap"}},"\u{1F3E6} ",label),H("span",{style:{display:"flex",alignItems:"center",gap:6,minWidth:0}},H("b",{style:{fontSize:15,color:v?c:e.muted,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},v?accName(t,v):"Aucun compte"),H("span",{style:{fontSize:13,color:e.faint}},op?"▴":"▾"))),
 op&&H("div",{style:{padding:"0 6px 8px"}},H(AccList,{t,v,col:c,none:!0,onPick:k=>{onChange(k),setOp(!1)}})),
@@ -356,7 +357,7 @@ function TransferEd({t,item:x,onSave,onDelete,onClose}){const H=React.createElem
 fc=accCur(t,fr),tc=accCur(t,to),rf=fxr(fc),rto=fxr(tc),xr0=Math.round(rf/rto*1e5)/1e5,X=fc===tc?1:ce(xr)>0?ce(xr):xr0,v=ce(a),auto=v>0?svR2(v*X):0,vb=ce(b)>0?ce(b):fc===tc?v:auto,gap=v>0?svR2(auto-vb):0,fX=ce(fe)>0?ce(fe):0,fee=svR2(gap*rto+fX*X*rto),ok=v>0&&fr&&to&&fr!==to&&!!d&&vb>0,
 fm=(z,c)=>`${z.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2})} ${curSym(c)}`;
 return H(Fe,{title:x?"Modifier le virement":"Virement entre comptes",onClose},H("div",{style:{padding:"0 20px 24px",...K}},
-H(AccChip,{t,v:fr,onChange:setFr,label:"Depuis",col:BL}),H(AccChip,{t,v:to,onChange:setTo,label:"Vers",col:BL}),
+H(AccChip,{t,v:fr,onChange:setFr,label:"Depuis",col:BL,full:!0}),H(AccChip,{t,v:to,onChange:setTo,label:"Vers",col:BL,full:!0}),
 fr&&fr===to&&H("div",{style:{fontSize:12.5,color:e.down,marginBottom:10}},"Choisis deux comptes diff\xE9rents."),
 H(Ce,{label:"Montant envoy\xE9",suffix:curSym(fc),value:a,onChange:setA,placeholder:"0"}),
 H(Ce,{label:fc!==tc?`Montant vraiment re\xE7u (${tc})`:"Montant vraiment re\xE7u",suffix:curSym(tc),value:b,onChange:setB,placeholder:auto?Ae(auto):"0"}),
