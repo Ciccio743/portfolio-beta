@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta name="build" content="beta-2026-10-16-2311">
+<meta name="build" content="beta-2026-10-17-0000">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -686,7 +686,7 @@ if(C.date<0||(C.amount<0&&C.debit<0&&C.credit<0))return{err:"Je ne trouve pas le
 D.forEach(r=>{const d=impDate(g(r,"date"),dmy);if(!d)return;const st=impN(g(r,"state"));if(st&&/revert|declin|cancel|annul|fail|pending|en attente/.test(st))return;let a=null;if(C.amount>-1)a=impNum(g(r,"amount"));if(a==null||a===0){const db=impNum(g(r,"debit")),cr=impNum(g(r,"credit"));if(db)a=-Math.abs(db);else if(cr)a=Math.abs(cr)}if(a==null||a===0)return;
 const ty=impN(g(r,"type"));if(C.amount>-1&&a>0&&/^(debit|d|s|sortie|out|soll)$/.test(ty))a=-a;const fee=C.fee>-1?Math.abs(impNum(g(r,"fee"))||0):0;if(fee&&a<0)a-=fee;
 const lab=[g(r,"label"),h.lab2>-1?r[h.lab2]:null].filter(x=>x&&String(x).trim()).join(" \xB7 ")||String(g(r,"type")||"Op\xE9ration"),cu=String(g(r,"cur")||"").toUpperCase().trim();out.push({date:d,label:String(lab),amount:a,cur:/^[A-Z]{3}$/.test(cu)?cu:null,bcat:g(r,"cat")})});return{mode:"bank",items:out}}
-async function impRead(file){const nm=file.name.toLowerCase();if(/\.(xlsx|xlsm|xls|ods)$/.test(nm)){const X=await loadXLSX(),wb=X.read(await file.arrayBuffer(),{type:"array",cellDates:!0});let last=null;for(const s of wb.SheetNames){const r=impRows(X.utils.sheet_to_json(wb.Sheets[s],{header:1,raw:!0,defval:""}));if(!r.err&&r.items.length)return r;last=r}return last??{err:"Fichier vide."}}
+async function impRead(file){const nm=file.name.toLowerCase();if(/\.pdf$/.test(nm)||file.type==="application/pdf")return{err:"C'est un PDF : l'appli ne peut pas lire les PDF. Dans ta banque, choisis le format Excel ou CSV pour le relev\xE9 (Revolut : compte \u203A \u2026 \u203A Relev\xE9s \u203A Excel)."};if(/\.(xlsx|xlsm|xls|ods)$/.test(nm)){const X=await loadXLSX(),wb=X.read(await file.arrayBuffer(),{type:"array",cellDates:!0});let last=null;for(const s of wb.SheetNames){const r=impRows(X.utils.sheet_to_json(wb.Sheets[s],{header:1,raw:!0,defval:""}));if(!r.err&&r.items.length)return r;last=r}return last??{err:"Fichier vide."}}
 const buf=await file.arrayBuffer();let txt=new TextDecoder("utf-8").decode(buf);if(txt.includes("�"))txt=new TextDecoder("windows-1252").decode(buf);
 if(/<OFX>|OFXHEADER/i.test(txt)){const L=impOFX(txt);return L.length?{mode:"bank",items:L}:{err:"Aucune op\xE9ration dans ce fichier OFX."}}if(/^!Type:/im.test(txt)){const L=impQIF(txt);return L.length?{mode:"bank",items:L}:{err:"Aucune op\xE9ration dans ce fichier QIF."}}return impRows(impCSV(txt))}
 const impKey=(d,a,l)=>`${d}|${Math.round(Math.abs(a)*100)}|${impN(impClean(l)).slice(0,24)}`;
@@ -715,7 +715,7 @@ done?H("div",{style:{textAlign:"center",padding:"30px 0"}},H("div",{style:{fontS
 !L?H(React.Fragment,null,H("div",{style:{fontSize:13.5,color:e.muted,lineHeight:1.5,marginBottom:14}},"T\xE9l\xE9charge le relev\xE9 depuis le site ou l'appli de ta banque, n\xE9obanque ou exchange (CSV, Excel, OFX ou QIF), puis choisis-le ici. Tout reste sur ton t\xE9l\xE9phone."),
 H("div",{style:{fontSize:13,color:e.muted,marginBottom:6}},"Compte concern\xE9 (facultatif)"),H(AccChip,{t,v:acc,onChange:k=>{setAcc(k);const c=k?accCur(t,k):"EUR";setCur(c||"EUR")},full:!0}),
 H("div",{style:{fontSize:13,color:e.muted,margin:"12px 0 6px"}},"Devise du relev\xE9"),H($e,{value:cur,onChange:setCur,options:[{id:"EUR",label:"EUR"},{id:"CHF",label:"CHF"},{id:"USD",label:"USD"}]}),
-H("input",{ref:fi,type:"file",accept:".csv,.txt,.xlsx,.xls,.ods,.ofx,.qfx,.qif,text/csv",style:{display:"none"},onChange:ev=>{pick(ev.target.files?.[0]);ev.target.value=""}}),
+H("input",{ref:fi,type:"file",style:{display:"none"},onChange:ev=>{pick(ev.target.files?.[0]);ev.target.value=""}}),
 H("div",{style:{marginTop:16}},H(we,{full:!0,onClick:()=>fi.current?.click()},st?.busy?"Lecture…":"\u{1F4C2} Choisir le fichier")),st?.err&&H("div",{style:{fontSize:13,color:e.down,marginTop:10,lineHeight:1.45}},st.err),
 H("div",{style:{fontSize:11.5,color:e.faint,marginTop:14,lineHeight:1.5}},"Compatible avec la plupart des banques (Cr\xE9dit Agricole, BNP, Soci\xE9t\xE9 G\xE9n\xE9rale, LCL, Caisse d'\xC9pargne, Banque Populaire, CIC, Cr\xE9dit Mutuel, La Banque Postale, Boursorama, Fortuneo, Hello bank…), n\xE9obanques (Revolut, N26, Qonto, Wise, Lydia, Shine…), banques suisses (UBS, PostFinance, Raiffeisen, BCV, Yuh, Neon…) et exchanges (r\xE9sultats de trading Binance, Bybit, Bitget, MEXC, OKX…).")):
 H(React.Fragment,null,H("div",{style:{fontSize:13,color:e.muted,marginBottom:10}},`\u{1F4C4} ${st.name}`),
