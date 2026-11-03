@@ -1113,8 +1113,8 @@ H(Ce,{label:"Note (facultatif)",inputMode:"text",value:f.note,onChange:x=>s("not
 H(we,{full:!0,disabled:!ok,onClick:save},"Enregistrer"),
 n&&H("div",{style:{marginTop:8}},H(we,{full:!0,kind:"danger",onClick:()=>cf?dl(n.id):setCf(!0)},cf?"Confirmer la suppression":n.rec?"Supprimer (tous les mois)":"Supprimer")),
 H("div",{style:{height:24}})))}
-function SpDonut({rows,total,inv=0}){const IR=76,IC=2*Math.PI*IR,ip=inv>0?inv/((total||0)+inv):0;const H=React.createElement,R=62,C=2*Math.PI*R,sum=rows.reduce((a,r)=>a+r.v,0)||1;let acc=0;
-return H("div",{style:{position:"relative",width:200,height:200,margin:"6px auto 14px"}},H("svg",{viewBox:"0 0 160 160",width:200,height:200,style:{transform:"rotate(-90deg)"}},H("circle",{cx:80,cy:80,r:R,fill:"none",stroke:e.s1,strokeWidth:20}),inv>0&&H("circle",{cx:80,cy:80,r:IR,fill:"none",stroke:"rgba(163,230,53,0.15)",strokeWidth:4}),inv>0&&H("circle",{cx:80,cy:80,r:IR,fill:"none",stroke:"#A3E635",strokeWidth:4,strokeLinecap:"round",strokeDasharray:`${Math.max(0,ip*IC)} ${IC}`}),
+function SpDonut({rows,total,inv=0}){const H=React.createElement,R=62,C=2*Math.PI*R,sum=rows.reduce((a,r)=>a+r.v,0)||1;let acc=0;
+return H("div",{style:{position:"relative",width:200,height:200,margin:"6px auto 14px"}},H("svg",{viewBox:"0 0 160 160",width:200,height:200,style:{transform:"rotate(-90deg)"}},H("circle",{cx:80,cy:80,r:R,fill:"none",stroke:e.s1,strokeWidth:20}),
 rows.map(r=>{const len=r.v/sum*C,gap=rows.length>1?Math.min(2,len*.3):0,el=H("circle",{key:r.id,cx:80,cy:80,r:R,fill:"none",stroke:r.color,strokeWidth:20,strokeDasharray:`${Math.max(0,len-gap)} ${C}`,strokeDashoffset:-acc});acc+=len;return el})),
 H("div",{style:{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",...K}},H("div",{style:{fontSize:22,fontWeight:750,letterSpacing:"-0.02em"}},"−",ee(total)),H("div",{style:{fontSize:12.5,color:e.muted,marginTop:2}},"Total d\xE9penses"),inv>0&&H("div",{style:{fontSize:12.5,fontWeight:650,color:"#A3E635",marginTop:6}},`+ ${ee(inv)} investis`)))}
 /* ===== simulation d'impôts : ce qui est imposable dans l'année, à déclarer l'année suivante ===== */
