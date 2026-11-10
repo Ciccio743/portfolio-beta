@@ -1,0 +1,27 @@
+name: Cours ETF
+on:
+  schedule:
+    - cron: "*/30 7-17 * * 1-5"
+    - cron: "0 12 * * 0,6"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["relais/isins.json", "relais/prices.mjs"]
+permissions:
+  contents: write
+concurrency: cours
+jobs:
+  cours:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: node relais/prices.mjs
+      - name: Publier sur la branche data
+        run: |
+          mkdir pub && mv prices.json pub/ && cd pub
+          git init -q -b data
+          git -c user.name=robot -c user.email=robot@users.noreply.github.com add prices.json
+          git -c user.name=robot -c user.email=robot@users.noreply.github.com commit -qm "cours"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" data
